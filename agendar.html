@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Agendar Horário</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#222; color: #eee; margin:0; padding:0; }
+    header { background:#111; padding: 1em; text-align: center; font-size: 2em; font-weight: bold; letter-spacing: 2px; }
+    main { max-width: 600px; margin: 2em auto; background:#333; border-radius: 10px; padding: 2em; box-shadow: 0 0 10px #000; }
+    form label { display: block; margin-top: 1em; font-weight: bold; }
+    form input, form select { width: 100%; padding: 0.6em; margin-top: 0.4em; border-radius: 5px; border: none; font-size: 1em; }
+    input[type="submit"] {
+       margin-top:2em; background:#0a0; color:#eee; border:none; font-weight: bold; cursor: pointer; transition: background 0.3s;
+       border-radius: 5px; padding: 0.8em;
+    }
+    input[type="submit"]:hover { background:#080; }
+    .horarios { margin-top: 0.6em; }
+    .error { background:#800; color:#eee; padding: 1em; margin-bottom: 1em; border-radius: 5px; }
+    a.button { display: inline-block; margin-top: 2em; color: #0af; text-decoration: underline; cursor: pointer;}
+</style>
+<script>
+  async function atualizarHorarios() {
+    const data = document.getElementById('data').value;
+    const selectHora = document.getElementById('hora');
+    if (!data) {
+      selectHora.innerHTML = '<option>Escolha uma data primeiro</option>';
+      return;
+    }
+    const res = await fetch(`/api/horarios_disponiveis?data=${data}`);
+    const dados = await res.json();
+    if (dados.error) {
+      selectHora.innerHTML = `<option>${dados.error}</option>`;
+      return;
+    }
+    if (dados.horarios.length === 0) {
+      selectHora.innerHTML = '<option>Sem horários disponíveis</option>';
+      return;
+    }
+    selectHora.innerHTML = '';
+    dados.horarios.forEach(horario => {
+      const opt = document.createElement('option');
+      opt.value = horario;
+      opt.textContent = horario;
+      selectHora.appendChild(opt);
+    });
+  }
+</script>
+</head>
+<body>
+<header>Agendamento Barbearia TOP</header>
+<main>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="error">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  <form method="POST" action="{{ url_for('agendar') }}">
+    <label for="nome">Nome completo *</label>
+    <input type="text" id="nome" name="nome" required />
+
+    <label for="telefone">Telefone</label>
+    <input type="text" id="telefone" name="telefone" />
+
+    <label for="servico">Serviço *</label>
+    <select id="servico" name="servico" required>
+      <option value="">Selecione um serviço</option>
+      {% for servico in servicos %}
+      <option value="{{ servico.id }}">{{ servico.nome }} - R$ {{ '%.2f'|format(servico.preco) }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="data">Data do atendimento *</label>
+    <input type="date" id="data" name="data" required onchange="atualizarHorarios()" min="{{date.today().isoformat()}}" />
+
+    <label for="hora">Horário *</label>
+    <select id="hora" name="hora" required>
+      <option>Escolha uma data primeiro</option>
+    </select>
+
+    <input type="submit" value="Agendar e pagar" />
+  </form>
+  <a class="button" href="{{ url_for('index') }}">Voltar para serviços</a>
+</main>
+</body>
+</html>
