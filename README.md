@@ -1,4 +1,4 @@
-# SITE_BARBERIA.py
+# SITE_BARBERIA
 ---
 # 📖 Documentação - Sistema de Agendamento Barbearia
 
