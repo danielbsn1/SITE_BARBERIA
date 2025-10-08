@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pagamento - Barbearia TOP</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#222; color: #eee; margin:0; padding:0; }
+    header { background:#111; padding: 1em; text-align: center; font-size: 2em; font-weight: bold; letter-spacing: 2px; }
+    main { max-width: 500px; margin: 3em auto; background:#333; border-radius: 10px; padding: 2.5em; box-shadow: 0 0 10px #000; text-align:center; }
+    button {
+      background:#0a0; color:#eee; font-weight: bold; padding: 1em 2em; border-radius: 8px;
+      border:none; font-size: 1.25em; cursor: pointer; transition: background 0.3s;
+    }
+    button:hover { background:#080; }
+    p { margin: 1em 0; font-size: 1.2em; }
+    a { color:#0af; text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>Pagamento</header>
+<main>
+  <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+  <p><strong>Serviço:</strong> {{ agendamento.servico.nome }}</p>
+  <p><strong>Valor:</strong> R$ {{ '%.2f'|format(agendamento.servico.preco) }}</p>
+  <p><strong>Data e hora:</strong> {{ agendamento.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+
+  <form method="POST" action="{{ url_for('pagamento', agendamento_id=agendamento.id) }}">
+    <button type="submit">Pagar Agora</button>
+  </form>
+
+  <p><a href="{{ url_for('index') }}">Voltar para o início</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Caixa - Barbearia TOP</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#222; color: #eee; margin:0; padding:0; }
+    header { background:#111; padding: 1em; text-align: center; font-size: 2em; font-weight: bold; letter-spacing: 2px; }
+    main { max-width: 550px; margin: 3em auto; background:#333; border-radius: 10px; padding: 2em; box-shadow: 0 0 10px #000; }
+    h2 { margin-bottom: 1em; text-align: center; }
+    p { font-size: 1.4em; margin: 0.8em 0; }
+    .valor { font-weight: bold; color: #0f0; }
+    a.logout {
+      display: block; text-align: center; margin-top: 2em; color: #f44; font-weight: bold;
+      text-decoration: underline; cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<header>Caixa - Barbearia TOP</header>
+<main>
+  <h2>Resumo de Ganhos</h2>
+  <p>Ganho do dia: <span class="valor">R$ {{ '%.2f'|format(ganho_dia) }}</span></p>
+  <p>Ganho do mês: <span class="valor">R$ {{ '%.2f'|format(ganho_mes) }}</span></p>
+  <p>Média diária no mês: <span class="valor">R$ {{ '%.2f'|format(media_mensal) }}</span></p>
+  <a class="logout" href="{{ url_for('logout') }}">Sair</a>
+</main>
+</body>
+</html>
