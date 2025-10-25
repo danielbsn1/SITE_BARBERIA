@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy # type: ignore
 from datetime import datetime, date
 from sqlalchemy import func # type: ignore
 
+# Use a configuração padrão (static/ e templates/ na raiz do projeto)
 app = Flask(__name__)
 app.secret_key = 'supersecretkey123'
 

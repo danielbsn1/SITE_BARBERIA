@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Login Proprietário</title>
+<link rel="stylesheet" href="/static/login.css">
+</head>
+<body>
+<header>Login Proprietário</header>
+<main>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="error">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  <form method="POST" action="{{ url_for('login') }}">
+    <label for="usuario">Usuário</label>
+    <input type="text" name="usuario" id="usuario" required />
+    <label for="senha">Senha</label>
+    <input type="password" name="senha" id="senha" required />
+    <input type="submit" value="Entrar" />
+  </form>
+  <a href="{{ url_for('index') }}">Voltar para o site</a>
+</main>
+</body>
+</html>

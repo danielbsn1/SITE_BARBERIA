@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Caixa - Barbearia TOP</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
+   
+</head>
+<body>
+<header>Caixa - Barbearia TOP</header>
+<main>
+  <h2>Resumo de Ganhos</h2>
+  <p>Ganho do dia: <span class="valor">R$ {{ '%.2f'|format(ganho_dia) }}</span></p>
+  <p>Ganho do mês: <span class="valor">R$ {{ '%.2f'|format(ganho_mes) }}</span></p>
+  <p>Média diária no mês: <span class="valor">R$ {{ '%.2f'|format(media_mensal) }}</span></p>
+  <a class="logout" href="{{ url_for('logout') }}">Sair</a>
+</main>
+</body>
+</html>

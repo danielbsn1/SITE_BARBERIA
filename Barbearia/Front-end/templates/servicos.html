@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Barbearia - Serviços</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+  <header>Barbearia</header>
+  <main>
+    <h2>Serviços</h2>
+    <ul>
+      {% for servico in servicos %}
+        <li>
+          {{ servico.nome }}
+          <span class="preco">R$ {{ '%.2f'|format(servico.preco) }}</span>
+        </li>
+      {% else %}
+        <li>Nenhum serviço cadastrado.</li>
+      {% endfor %}
+    </ul>
+    <a class="button" href="{{ url_for('agendar') }}">Agende seu horário</a>
+  </main>
+  <footer>© 2025 Barbearia TOP</footer>
+</body>
+</html>
