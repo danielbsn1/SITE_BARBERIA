@@ -4,25 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Barbearia - Serviços</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/login.css">
 </head>
 <body>
   <header>Barbearia</header>
   <main>
     <h2>Serviços</h2>
-    <ul>
-      {% for servico in servicos %}
-        <li>
-          {{ servico.nome }}
-          <span class="preco">R$ {{ '%.2f'|format(servico.preco) }}</span>
-        </li>
-      {% else %}
-        <li>Nenhum serviço cadastrado.</li>
-      {% endfor %}
+    <ul id="lista-servicos">
+      <li>Corte de cabelo</li>
+      <li>Baraba Terapeutica</li>
+      <li>Sombracelha</li>
+      <li>Limpeza de Pele</li>
     </ul>
-    <a class="button" href="{{ url_for('agendar') }}">Agende seu horário</a>
+    <a class="button" href="/agendar">Agende seu horário</a>
   </main>
   <footer>© 2025 Barbearia TOP</footer>
+
+  <script>
+    async function loadServicos(){
+      const ul = document.getElementById('lista-servicos');
+      try{
+        const res = await fetch('/api/servicos');
+        if(!res.ok) throw new Error('Falha ao carregar serviços');
+        const data = await res.json();
+        ul.innerHTML = '';
+        if(!data.servicos || data.servicos.length === 0){
+          ul.innerHTML = '<li>Nenhum serviço cadastrado.</li>';
+          return;
+        }
+        data.servicos.forEach(s => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${s.nome}</span>
+            <span class="preco">R$ ${Number(s.preco).toFixed(2)}</span>
+            <a class="button" href="/agenda?servico_id=${s.id}">Agendar</a>
+          `;
+          ul.appendChild(li);
+        });
+      }catch(err){
+        ul.innerHTML = `<li>Erro: ${err.message}</li>`;
+      }
+    }
+    loadServicos();
+  </script>
 </body>
 </html>

@@ -1,11 +1,31 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify # type: ignore
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy # type: ignore
 from datetime import datetime, date
 from sqlalchemy import func # type: ignore
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
-# Use a configuração padrão (static/ e templates/ na raiz do projeto)
-app = Flask(__name__)
+# Detecta pastas de templates/static no layout atual do projeto
+BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+# caminhos possíveis
+p_templates = os.path.join(BASE, 'Barbearia', 'Front-end', 'templates')
+p_static = os.path.join(BASE, 'Barbearia', 'Front-end', 'static')
+
+# fallback para estrutura padrão
+if not os.path.isdir(p_templates):
+    p_templates = os.path.join(BASE, 'templates')
+if not os.path.isdir(p_static):
+    p_static = os.path.join(BASE, 'static')
+
+TEMPLATE_FOLDER = p_templates
+STATIC_FOLDER = p_static
+
+app = Flask(__name__, template_folder=TEMPLATE_FOLDER, static_folder=STATIC_FOLDER)
 app.secret_key = 'supersecretkey123'
+
+app.logger.info(f"Usando templates em: {TEMPLATE_FOLDER}")
+app.logger.info(f"Usando static em: {STATIC_FOLDER}")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///barbearia.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -113,6 +133,18 @@ def pagamento(agendamento_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # Suporta requisição JSON (fetch) e formulário padrão
+        if request.is_json:
+            data = request.get_json()
+            usuario = data.get('usuario')
+            senha = data.get('senha')
+            user = Usuario.query.filter_by(usuario=usuario, senha=senha).first()
+            if user:
+                session['usuario'] = user.usuario
+                return jsonify({'success': True, 'redirect': url_for('caixa')})
+            return jsonify({'success': False, 'error': 'Usuário ou senha incorretos.'}), 401
+
+        # Form submit tradicional
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
         user = Usuario.query.filter_by(usuario=usuario, senha=senha).first()
@@ -179,5 +211,5 @@ def horarios_disponiveis():
     return jsonify({'horarios': horarios_livres})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
 

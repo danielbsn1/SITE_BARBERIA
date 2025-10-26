@@ -1,31 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Login Proprietário</title>
-<link rel="stylesheet" href="/static/login.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Login Proprietário</title>
+  <link rel="stylesheet" href="/static/login.css">
 </head>
 <body>
 <header>Login Proprietário</header>
 <main>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="error">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  <form method="POST" action="{{ url_for('login') }}">
+  <div id="messages" class="error" style="display:none"></div>
+
+  <form id="loginForm">
     <label for="usuario">Usuário</label>
     <input type="text" name="usuario" id="usuario" required />
     <label for="senha">Senha</label>
     <input type="password" name="senha" id="senha" required />
-    <input type="submit" value="Entrar" />
+    <button type="submit">Entrar</button>
   </form>
-  <a href="{{ url_for('index') }}">Voltar para o site</a>
+
+  <a href="/">Voltar para o site</a>
 </main>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const usuario = document.getElementById('usuario').value;
+  const senha = document.getElementById('senha').value;
+  const msg = document.getElementById('messages');
+
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, senha })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      window.location = data.redirect || '/';
+    } else {
+      msg.style.display = 'block';
+      msg.textContent = data.error || 'Erro no login';
+    }
+  } catch (err) {
+    msg.style.display = 'block';
+    msg.textContent = 'Erro de conexão';
+  }
+});
+</script>
 </body>
 </html>
