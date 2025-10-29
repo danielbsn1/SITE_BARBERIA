@@ -12,3 +12,11 @@ async function loadCaixa(){
   }
 }
 loadCaixa();
+  // Verifica se o usuário está logado
+  const isLoggedIn = localStorage.getItem("userLoggedIn");
+
+  if (!isLoggedIn) {
+    // Se não estiver logado, redireciona para login
+    window.location.href = "login.html";
+  }
+

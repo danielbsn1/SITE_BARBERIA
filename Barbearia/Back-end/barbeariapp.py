@@ -1,18 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_sqlalchemy import SQLAlchemy # type: ignore
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
-from sqlalchemy import func # type: ignore
+from sqlalchemy import func
+from functools import wraps
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
-# Detecta pastas de templates/static no layout atual do projeto
+# ================================
+# 🔧 Configuração inicial do Flask
+# ================================
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# caminhos possíveis
 p_templates = os.path.join(BASE, 'Barbearia', 'Front-end', 'templates')
 p_static = os.path.join(BASE, 'Barbearia', 'Front-end', 'static')
 
-# fallback para estrutura padrão
 if not os.path.isdir(p_templates):
     p_templates = os.path.join(BASE, 'templates')
 if not os.path.isdir(p_static):
@@ -27,10 +27,16 @@ app.secret_key = 'supersecretkey123'
 app.logger.info(f"Usando templates em: {TEMPLATE_FOLDER}")
 app.logger.info(f"Usando static em: {STATIC_FOLDER}")
 
+# ==================================
+# 💾 Configuração do banco de dados
+# ==================================
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///barbearia.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# ================================
+# 🧱 Modelos do banco de dados
+# ================================
 class Servico(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -56,6 +62,21 @@ class Usuario(db.Model):
     usuario = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(100), nullable=False)
 
+# ================================
+# 🧩 Decorador para login obrigatório
+# ================================
+def login_obrigatorio(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario' not in session:
+            flash('Você precisa estar logado para acessar essa página.', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# ================================
+# 🚀 Inicialização automática do BD
+# ================================
 @app.before_request
 def setup():
     if not hasattr(app, 'db_initialized'):
@@ -72,6 +93,9 @@ def setup():
             db.session.commit()
         app.db_initialized = True
 
+# ================================
+# 🌐 Rotas públicas
+# ================================
 @app.route('/')
 def index():
     servicos = Servico.query.all()
@@ -88,7 +112,7 @@ def agendar():
         hora = request.form.get('hora')
 
         if not nome or not servico_id or not data or not hora:
-            flash('Por favor preencha todos os campos obrigatórios!')
+            flash('Por favor, preencha todos os campos obrigatórios!')
             return redirect(url_for('agendar'))
 
         try:
@@ -114,12 +138,6 @@ def agendar():
         return redirect(url_for('pagamento', agendamento_id=agendamento.id))
     return render_template('agendar.html', servicos=servicos, date=date)
 
-@app.route('/agendamentos')
-def agendamentos():
-    # Exemplo: listar todos os agendamentos
-    agendamentos = Agendamento.query.all()
-    return render_template('agendamentos.html', agendamentos=agendamentos)
-
 @app.route('/pagamento/<int:agendamento_id>', methods=['GET', 'POST'])
 def pagamento(agendamento_id):
     agendamento = Agendamento.query.get_or_404(agendamento_id)
@@ -130,29 +148,38 @@ def pagamento(agendamento_id):
         return redirect(url_for('index'))
     return render_template('pagamento.html', agendamento=agendamento)
 
+@app.route('/api/horarios_disponiveis', methods=['GET'])
+def horarios_disponiveis():
+    data_str = request.args.get('data')
+    if not data_str:
+        return jsonify({'error': 'Data não fornecida'}), 400
+    try:
+        data = datetime.strptime(data_str, '%Y-%m-%d').date()
+    except:
+        return jsonify({'error': 'Data inválida'}), 400
+
+    horarios_possiveis = [f'{h:02d}:00' for h in range(9, 18)]
+    agendamentos = Agendamento.query.filter(func.date(Agendamento.data_hora) == data).all()
+    horarios_ocupados = set([ag.data_hora.strftime('%H:%M') for ag in agendamentos])
+    horarios_livres = [h for h in horarios_possiveis if h not in horarios_ocupados]
+
+    return jsonify({'horarios': horarios_livres})
+
+# ================================
+# 🔐 Rotas de login / logout
+# ================================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Suporta requisição JSON (fetch) e formulário padrão
-        if request.is_json:
-            data = request.get_json()
-            usuario = data.get('usuario')
-            senha = data.get('senha')
-            user = Usuario.query.filter_by(usuario=usuario, senha=senha).first()
-            if user:
-                session['usuario'] = user.usuario
-                return jsonify({'success': True, 'redirect': url_for('caixa')})
-            return jsonify({'success': False, 'error': 'Usuário ou senha incorretos.'}), 401
-
-        # Form submit tradicional
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
         user = Usuario.query.filter_by(usuario=usuario, senha=senha).first()
         if user:
             session['usuario'] = user.usuario
+            flash('Login realizado com sucesso!')
             return redirect(url_for('caixa'))
         else:
-            flash('Usuário ou senha incorretos.')
+            flash('Usuário ou senha incorretos.', 'error')
             return redirect(url_for('login'))
     return render_template('login.html')
 
@@ -162,12 +189,12 @@ def logout():
     flash('Desconectado com sucesso.')
     return redirect(url_for('index'))
 
+# ================================
+# 💰 Rotas privadas (somente admin)
+# ================================
 @app.route('/caixa')
+@login_obrigatorio
 def caixa():
-    if 'usuario' not in session:
-        flash('É necessário fazer login para acessar essa página.')
-        return redirect(url_for('login'))
-
     hoje = date.today()
     primeiro_dia_mes = date(hoje.year, hoje.month, 1)
 
@@ -192,24 +219,8 @@ def caixa():
 
     return render_template('caixa.html', ganho_dia=ganho_dia, ganho_mes=ganho_mes, media_mensal=media_mensal)
 
-@app.route('/api/horarios_disponiveis', methods=['GET'])
-def horarios_disponiveis():
-    data_str = request.args.get('data')
-    if not data_str:
-        return jsonify({'error': 'Data não fornecida'}), 400
-    try:
-        data = datetime.strptime(data_str, '%Y-%m-%d').date()
-    except:
-        return jsonify({'error': 'Data inválida'}), 400
-
-    horarios_possiveis = [f'{h:02d}:00' for h in range(9, 18)]
-
-    agendamentos = Agendamento.query.filter(func.date(Agendamento.data_hora) == data).all()
-    horarios_ocupados = set([ag.data_hora.strftime('%H:%M') for ag in agendamentos])
-    horarios_livres = [h for h in horarios_possiveis if h not in horarios_ocupados]
-
-    return jsonify({'horarios': horarios_livres})
-
+# ================================
+# 🚀 Executar o app
+# ================================
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
-
