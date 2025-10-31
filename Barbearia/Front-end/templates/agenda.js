@@ -5,6 +5,7 @@ loadAgendamentos(new Date().toISOString().slice(0,10));
 const hoje = new Date().toISOString().slice(0,10);
 document.getElementById('data').value = hoje;
 
+
 function gerarHoras(){
   const sel = document.getElementById('hora');
   sel.innerHTML = '';
