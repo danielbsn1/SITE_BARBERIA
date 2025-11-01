@@ -2,77 +2,63 @@
 <html lang="pt-br">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Agenda - Barbearia TOP</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda - Barbearia Style</title>
+  <link rel="stylesheet" href="styles.css/agenda.css">
 </head>
 <body>
-<header>Agenda - Barbearia TOP</header>
-<main>
-  <h2>Agenda</h2>
+  <header>Agenda - Barbearia TOP</header>
 
-  <section>
-    <label for="data">Escolha a data</label>
-    <input type="date" id="data" />
-  </section>
+  <main>
+    <h2>Agenda</h2>
 
-  <section>
-    <h3>Novo Agendamento</h3>
-    <form id="agendamentoForm">
-      <label for="nome">Nome</label>
-      <input id="nome" name="nome" required />
+    <!-- Seção para escolher a data -->
+    <section>
+      <label for="data">Escolha a data</label>
+      <input type="date" id="data" />
+    </section>
 
-      <label for="telefone">Telefone</label>
-      <input id="telefone" name="telefone" />
+    <!-- Seção para novo agendamento -->
+    <section>
+      <h3>Novo Agendamento</h3>
 
-      <label for="servico">Serviço</label>
-      <select id="servico" name="servico" required>
-        <option>
-          <label for="Corte de cabelo"></label>
-          Corte de cabelo - R$ 50.00
-        </option>
+      <form id="agendamentoForm">
+        <label for="nome">Nome</label>
+        <input id="nome" name="nome" required />
 
-         <option>
-          <label for="Barba terapeutica"></label>
-           Barba terapeutica - R$ 30.00
-        </option>
+        <label for="telefone">Telefone</label>
+        <input id="telefone" name="telefone" />
 
-          <option>
-          <label for="Sombrancelha"></label>
-           Sombrancelha - R$ 15.00
-        </option>
+        <label for="servico">Serviço</label>
+        <select id="servico" name="servico" required>
+          <option value="1">Corte de cabelo - R$ 50,00</option>
+          <option value="2">Barba terapêutica - R$ 30,00</option>
+          <option value="3">Sobrancelha - R$ 15,00</option>
+          <option value="4">Limpeza de pele - R$ 40,00</option>
+        </select>
 
-         <option>
-          <label for="Limpeza de pele"></label>
-           Limpeza de pele - R$ 40.00
-        </option>
+        <label for="hora">Hora</label>
+        <select id="hora" name="hora" required>
+          <!-- opções geradas por JS -->
+        </select>
 
+        <button type="submit">Agendar</button>
+      </form>
 
-      </select>
+      <div id="msg" class="error" style="display:none"></div>
+    </section>
 
-    </div>
+    <!-- Seção para listar agendamentos -->
+    <section>
+      <h3>Agendamentos</h3>
+      <ul id="lista-agendamentos">
+        <li>Escolha uma data para ver agendamentos.</li>
+      </ul>
+    </section>
+  </main>
 
-      </select>
+  <!-- o script deve ficar AQUI, antes de fechar o body -->
+<script src="agenda.js"></script>
 
-      <label for="hora">Hora</label>
-      <select id="hora" name="hora" required>
-        <!-- opções geradas por JS -->
-      </select>
-
-      <button type="submit">Agendar</button>
-    </form>
-    <div id="msg" class="error" style="display:none"></div>
-  </section>
-
-  <section>
-    <h3>Agendamentos</h3>
-    <ul id="lista-agendamentos">
-      <li>Escolha uma data para ver agendamentos.</li>
-    </ul>
-  </section>
-</main>
-
-<script src="/static/js/agenda.js"></script>
-</script>
 </body>
 </html>

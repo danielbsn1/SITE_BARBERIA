@@ -1,0 +1,46 @@
+.title {
+    text-align: center;
+    color: #333;
+}
+img {
+    display: block;
+    margin: 0 auto;
+    width: 565px;
+    height: auto;
+    border-radius: 1000px;
+}
+h1 {
+    text-align: center;
+    color: #333;
+}
+p {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+}
+a {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #200bdf;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+p.footer {
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    margin-top: 40px;
+}
+body {
+  background-image:url;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* opcional: faz o fundo ficar fixo ao rolar */
+}
+body {
+   background-color: #a8adabc7;
+   }
