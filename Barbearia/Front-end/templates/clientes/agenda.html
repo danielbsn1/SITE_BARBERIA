@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agenda - Barbearia Style</title>
-  <link rel="stylesheet" href="styles.css/agenda.css">
+  <link rel="stylesheet" href="styles.css/agenda.css" />
 </head>
 <body>
   <header>Agenda - Barbearia TOP</header>
@@ -12,13 +12,11 @@
   <main>
     <h2>Agenda</h2>
 
-    <!-- Seção para escolher a data -->
     <section>
       <label for="data">Escolha a data</label>
       <input type="date" id="data" />
     </section>
 
-    <!-- Seção para novo agendamento -->
     <section>
       <h3>Novo Agendamento</h3>
 
@@ -38,17 +36,12 @@
         </select>
 
         <label for="hora">Hora</label>
-        <select id="hora" name="hora" required>
-          <!-- opções geradas por JS -->
-        </select>
+        <select id="hora" name="hora" required></select>
 
         <button type="submit">Agendar</button>
       </form>
-
-      <div id="msg" class="error" style="display:none"></div>
     </section>
 
-    <!-- Seção para listar agendamentos -->
     <section>
       <h3>Agendamentos</h3>
       <ul id="lista-agendamentos">
@@ -56,9 +49,8 @@
       </ul>
     </section>
   </main>
-
-  <!-- o script deve ficar AQUI, antes de fechar o body -->
-<script src="agenda.js"></script>
+  <!-- JS carregado no final -->
+ <script src="agenda.js"></script>
 
 </body>
 </html>

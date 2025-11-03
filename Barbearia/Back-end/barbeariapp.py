@@ -4,7 +4,11 @@ from sqlalchemy import func
 from datetime import datetime
 import os
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder='Front-end/templates',
+    static_folder='Front-end/static'
+)= Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'banco.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
