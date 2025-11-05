@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Meus Agendamentos - Barbearia</title>
-  <link rel="stylesheet" href="/static/styles.css/agenda.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+
 </head>
 <body>
   <header>Meus Agendamentos</header>
@@ -22,6 +23,7 @@
       </ul>
     </section>
   </main>
-  <script src="/static/js/meus_agendamentos.js"></script>
+  <script src="{{ url_for('static', filename='js/meus_agendamentos.js') }}"></script>
+
 </body>
 </html>

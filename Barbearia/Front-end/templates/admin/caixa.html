@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Caixa - Barbearia TOP</title>
-  <link rel="stylesheet" href="style/caixa.css">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
+
 </head>
 <body>
 <header>Caixa - Barbearia TOP</header>
@@ -20,7 +21,7 @@
 </main>
 
 
-<script src="/style/js/caixa.js">
-</script>
+<script src="{{ url_for('static', filename='js/caixa.js') }}"></script>
+
 </body>
 </html>

@@ -1,21 +1,31 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, date
 from sqlalchemy import func
-from datetime import datetime
 import os
 
-app = Flask(
-    __name__,
-    template_folder='Front-end/templates',
-    static_folder='Front-end/static'
-)= Flask(__name__)
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# ================================
+# 🔧 CONFIGURAÇÃO DO FLASK E BANCO
+# ================================
+
+# Caminhos base
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+template_dir = os.path.join(BASE_DIR, 'Front-end', 'templates')
+static_dir = os.path.join(BASE_DIR, 'Front-end', 'static')
+
+# Inicializa o Flask com os caminhos corretos
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
+# Configuração do banco de dados SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'banco.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "chave_super_segura"
+
+# Inicializa o banco
 db = SQLAlchemy(app)
 
 # =============================
-# MODELOS
+# 📦 MODELOS
 # =============================
 class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,14 +46,30 @@ class Agendamento(db.Model):
     data_hora = db.Column(db.DateTime, nullable=False)
 
 # =============================
-# ROTAS DE PÁGINAS
+# 🌐 ROTAS DE PÁGINAS
 # =============================
 @app.route('/')
-def index():
-    return render_template('agenda.html')
+def home():
+    return render_template('clientes/home.html')
+
+@app.route('/agenda')
+def agenda():
+    return render_template('clientes/agenda.html')
+
+@app.route('/meus-agendamentos')
+def meus_agendamentos():
+    return render_template('clientes/meus_agendamentos.html')
+
+@app.route('/admin')
+def admin_home():
+    return render_template('admin/login.html')
+
+@app.route('/caixa')
+def caixa():
+    return render_template('admin/caixa.html')
 
 # =============================
-# API DE SERVIÇOS E AGENDAMENTOS
+# 🔗 API DE SERVIÇOS E AGENDAMENTOS
 # =============================
 @app.route('/api/servicos')
 def api_servicos():
@@ -133,11 +159,10 @@ def api_agendamentos():
         return jsonify({'message': 'Agendamento criado com sucesso!'})
 
 # =============================
-# INICIALIZAÇÃO DO BANCO
+# ⚙️ INICIALIZAÇÃO DO BANCO
 # =============================
 with app.app_context():
     db.create_all()
-    # Adiciona serviços se ainda não existirem
     if Servico.query.count() == 0:
         db.session.add_all([
             Servico(nome='Corte de Cabelo', preco=50.00),
@@ -147,5 +172,9 @@ with app.app_context():
         ])
         db.session.commit()
 
+# =============================
+# 🚀 INÍCIO DO SERVIDOR
+# =============================
 if __name__ == '__main__':
     app.run(debug=True)
+# =============================

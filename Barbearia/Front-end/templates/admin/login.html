@@ -1,31 +1,23 @@
-<!DOCTYPE html>
+login.html <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Login Proprietário</title>
-  <link rel="stylesheet" href="style/login.css">
+  <meta charset="UTF-8">
+  <title>Login - Barbearia Style</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
 </head>
 <body>
-<header>Login Proprietário</header>
-<div class="botao">
-    <a href="login.html" class="btn"></a>
-    <a href="caixa.html" class="btn"></a>
-</div>
-<main>
-  <div id="messages" class="error" style="display:none"></div>
+  <main>
+    <h2>Login do Administrador</h2>
+    <form method="POST" action="/login">
+      <label>Usuário</label>
+      <input name="usuario" required>
+      <label>Senha</label>
+      <input type="password" name="senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+  </main>
+ <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
-  <form id="loginForm">
-    <label for="usuario">Usuário</label>
-    <input type="text" name="usuario" id="usuario" required />
-    <label for="senha">Senha</label>
-    <input type="password" name="senha" id="senha" required />
-    <button type="submit">Entrar</button>
-  </form>
-
-  <a href="home.html">Voltar para o site</a>
-
-</main>
-<script src="/static/login.js"></script>
 </body>
-</html>
+</html> 

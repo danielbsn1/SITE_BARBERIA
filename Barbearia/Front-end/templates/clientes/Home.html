@@ -2,16 +2,25 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Barbearia style</title>
-  <link rel="stylesheet" href="styles.css/home.css">
+  <title>Barbearia Style</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 <body>
-  <h1>💈 Barbearia Estilo</h1>
-  <img src="img/Barberia.jpeg.jpeg" alt="Barberia style">>
-  <p>Bem-vindo! Escolha uma opção para continuar:</p>
-  <a href="agenda.html"> Agendar Horário</a>
-  <a href="meus_agendamentos.html">Consulte o seu agendamento</a>
-  <p>© 2021 Barbearia Estilo</p>
-   <script>"static/js/home.js"</script>
+  <header>
+    <h1>💈 Barbearia Style</h1>
+    <img src="{{ url_for('static', filename='img/Barberia.jpeg') }}" alt="Logo da barbearia">
+  </header>
+
+  <main>
+    <p>Bem-vindo! Escolha uma opção para continuar:</p>
+    <a href="{{ url_for('agenda') }}">Ir para Agenda</a><br>
+    <a href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a>
+  </main>
+
+  <footer>
+    <p>© 2021 Barbearia Estilo</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/home.js') }}" type="module"></script>
 </body>
 </html>

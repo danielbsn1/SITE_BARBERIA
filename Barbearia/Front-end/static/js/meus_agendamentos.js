@@ -1,3 +1,4 @@
+
 ocument.getElementById('buscar').addEventListener('click', async () => {
       const tel = document.getElementById('telefone').value.trim();
       const ul = document.getElementById('lista-cliente');

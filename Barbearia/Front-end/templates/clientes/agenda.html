@@ -4,8 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agenda - Barbearia Style</title>
-  <link rel="stylesheet" href="styles.css/agenda.css" />
-</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/agenda.css') }}">
+
+
+ </head> 
 <body>
   <header>Agenda - Barbearia TOP</header>
 
@@ -50,7 +52,9 @@
     </section>
   </main>
   <!-- JS carregado no final -->
- <script src="agenda.js"></script>
+ <script src="{{ url_for('static', filename='js/agenda.js') }}"></script>
+
+
 
 </body>
 </html>
