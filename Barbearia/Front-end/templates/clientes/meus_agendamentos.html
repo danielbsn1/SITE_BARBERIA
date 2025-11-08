@@ -1,29 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
   <title>Meus Agendamentos - Barbearia</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-
+  <link rel="stylesheet" href="{{url_for('static' , filename='css/meus_agendamentos.css')}}">
 </head>
 <body>
-  <header>Meus Agendamentos</header>
-  <main>
-    <h2>Consultar Agendamentos</h2>
+  <div class="container">
+    <h1>📅 Meus Agendamentos</h1>
 
-    <label for="telefone">Digite seu telefone:</label>
-    <input type="text" id="telefone" placeholder="(11) 99999-9999">
-    <button id="buscar">Buscar</button>
+    <div class="busca">
+      <input type="text" id="telefone" placeholder="Digite seu telefone">
+      <button id="btnBuscar">Buscar</button>
+    </div>
 
-    <section>
-      <h3>Seus Agendamentos</h3>
-      <ul id="lista-cliente">
-        <li>Informe o telefone e clique em Buscar.</li>
-      </ul>
-    </section>
-  </main>
+    <div id="listaAgendamentos" class="lista"></div>
+  </div>
+
   <script src="{{ url_for('static', filename='js/meus_agendamentos.js') }}"></script>
-
 </body>
 </html>

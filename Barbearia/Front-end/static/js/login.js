@@ -1,26 +1,31 @@
-// static/js/login.js
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formLogin');
+  const msg = document.getElementById('mensagem');
 
-  const usuario = document.getElementById('usuario').value.trim();
-  const senha = document.getElementById('senha').value.trim();
+  if (!form) return; // 🔒 segurança extra para evitar erro
 
-  try {
-    const res = await fetch('/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, senha })
-    });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    const data = await res.json();
+    const usuario = document.getElementById('usuario').value.trim();
+    const senha = document.getElementById('senha').value.trim();
 
-    if (res.ok) {
-      alert('Login realizado com sucesso!');
-      window.location.href = '/caixa'; // 👉 redireciona direto pro caixa
-    } else {
-      alert(data.error || 'Usuário ou senha incorretos.');
+    if (!usuario || !senha) {
+      msg.textContent = 'Preencha todos os campos.';
+      msg.style.color = 'red';
+      return;
     }
-  } catch (err) {
-    alert('Erro ao tentar fazer login: ' + err.message);
-  }
+
+    // Envio para o servidor (simulado por enquanto)
+    if (usuario === 'admin' && senha === '1234') {
+      msg.textContent = 'Login bem-sucedido! Redirecionando...';
+      msg.style.color = 'green';
+      setTimeout(() => {
+        window.location.href = '/caixa'; // redireciona para página de administração
+      }, 1000);
+    } else {
+      msg.textContent = 'Usuário ou senha incorretos.';
+      msg.style.color = 'red';
+    }
+  });
 });

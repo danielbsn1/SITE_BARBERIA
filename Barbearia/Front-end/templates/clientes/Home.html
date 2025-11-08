@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Barbearia Style</title>
+  <title>Home - Barbearia</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
+
 <body>
+  <!-- 🔹 Botão de login no canto superior direito -->
   <header>
-    <h1>💈 Barbearia Style</h1>
-    <img src="{{ url_for('static', filename='img/Barberia.jpeg') }}" alt="Logo da barbearia">
+    <a href="{{ url_for('admin_login') }}" class="btn-login">Login</a>
   </header>
 
   <main>
-    <p>Bem-vindo! Escolha uma opção para continuar:</p>
-    <a href="{{ url_for('agenda') }}">Ir para Agenda</a><br>
-    <a href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a>
+    <h1>Bem-vindo à Barbearia</h1>
+    <p>Escolha um serviço e agende seu horário!</p>
+
+    <a href="{{ url_for('agenda') }}" class="btn-agendar">Agendar Horário</a>
   </main>
 
-  <footer>
-    <p>© 2021 Barbearia Estilo</p>
-  </footer>
-
-  <script src="{{ url_for('static', filename='js/home.js') }}" type="module"></script>
+  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>

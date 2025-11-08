@@ -1,27 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Caixa - Barbearia TOP</title>
- <link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Caixa</title>
 
+  <!-- ✅ Estilo básico -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
 </head>
 <body>
-<header>Caixa - Barbearia TOP</header>
-<main>
-  <h2>Resumo de Faturamento</h2>
-  <p>Faturamento do dia: <span class="valor" id="Faturamento">R$ </span></p>
-   <input type="number">
-  <p>Faturamento do mês: <span class="valor" id="Faturamento">R$ </span></p>
-    <input type="number">
-  <p>Média diária no mês: <span class="valor" id="media_mensal">R$ </span></p>
-    <input type="number">
-  <a class="logout" href="/logout">Sair</a>
-</main>
+  <div class="container">
+    <h1>Painel do Caixa</h1>
 
+    <h2 id="total">Total no Caixa: R$ 0,00</h2>
 
-<script src="{{ url_for('static', filename='js/caixa.js') }}"></script>
+    <div class="input-container">
+      <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
+    </div>
 
+    <div class="btn-container">
+      <button id="btnAdicionar">Adicionar</button>
+      <button id="btnFechar">Fechar Caixa</button>
+    </div>
+
+    <div id="mensagem"></div>
+  </div>
+
+  <!-- ✅ Script de funcionalidade -->
+  <script src="{{ url_for('static', filename='js/caixa.js') }}"></script>
 </body>
 </html>

@@ -1,27 +1,39 @@
-async function carregarCaixa() {
-    const data = document.getElementById('data').value;
-    const res = await fetch('/api/agendamentos?data=' + data);
-    const dados = await res.json();
-    const lista = document.getElementById('lista');
-    lista.innerHTML = '';
+document.addEventListener("DOMContentLoaded", () => {
+  const totalElem = document.getElementById("total");
+  const valorInput = document.getElementById("valor");
+  const btnAdd = document.getElementById("btnAdicionar");
+  const btnFechar = document.getElementById("btnFechar");
+  const mensagem = document.getElementById("mensagem");
 
-    let total = 0;
-    dados.agendamentos.forEach(a => {
-      total += a.preco;
-      const li = document.createElement('li');
-      li.textContent = `${a.data_hora.slice(11,16)} - ${a.cliente} - ${a.servico} - R$ ${a.preco.toFixed(2)}`;
-      lista.appendChild(li);
-    });
-
-    const liTotal = document.createElement('li');
-    liTotal.innerHTML = `<strong>Total do dia: R$ ${total.toFixed(2)}</strong>`;
-    lista.appendChild(liTotal);
+  async function atualizarTotal() {
+    const res = await fetch("/api/caixa");
+    const data = await res.json();
+    totalElem.textContent = `Total no Caixa: R$ ${data.valor_total.toFixed(2)}`;
   }
 
-  document.getElementById('data').addEventListener('change', carregarCaixa);
+  btnAdd.addEventListener("click", async () => {
+    const valor = parseFloat(valorInput.value);
+    if (isNaN(valor) || valor <= 0) {
+      mensagem.textContent = "Digite um valor válido!";
+      return;
+    }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const hoje = new Date().toISOString().slice(0, 10);
-    document.getElementById('data').value = hoje;
-    carregarCaixa();
+    await fetch("/api/caixa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ valor })
+    });
+
+    valorInput.value = "";
+    mensagem.textContent = "Valor adicionado!";
+    atualizarTotal();
   });
+
+  btnFechar.addEventListener("click", async () => {
+    await fetch("/api/caixa", { method: "DELETE" });
+    mensagem.textContent = "Caixa fechado e zerado!";
+    atualizarTotal();
+  });
+
+  atualizarTotal();
+});

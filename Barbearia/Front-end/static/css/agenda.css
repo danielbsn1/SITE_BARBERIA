@@ -1,57 +1,108 @@
-title{
-    color: #333;
+/* ================================
+   ESTILO GERAL
+================================ */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 0;
 }
+
+/* ================================
+   CABEÇALHO
+================================ */
 header {
-    text-align: center;
-    font-size: 24px;
-    margin-top: 20px;
-    color: #333;
+  background-color: #222;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
-h2 {
-    text-align: center;
-    color: #333;
+
+/* ================================
+   CONTEÚDO PRINCIPAL
+================================ */
+main {
+  max-width: 420px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
-section {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+/* ================================
+   FORMULÁRIO
+================================ */
+form {
+  display: flex;
+  flex-direction: column;
 }
+
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #333;
 }
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+
+input, select, button {
+  margin-top: 8px;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0,123,255,0.5);
+}
+
+/* ================================
+   SELECT MÚLTIPLO
+================================ */
+select[multiple] {
+  height: 120px;
+  background-color: #fafafa;
+  overflow-y: auto;
+  cursor: pointer;
+}
+
+select[multiple] option {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+select[multiple] option:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* ================================
+   BOTÃO
+================================ */
 button {
-    width: 100%;
-    padding: 10px;
-    background-color: #200bdf;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
+  margin-top: 25px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
+
 button:hover {
-    background-color: #1508a3;
+  background-color: #0056b3;
 }
-body {
-   background-color: #a8adabc7;
-   }
-body {
-  background-image:url;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* opcional: faz o fundo ficar fixo ao rolar */
+
+/* ================================
+   TEXTO DE AJUDA
+================================ */
+small {
+  color: #555;
+  font-size: 0.9em;
+  margin-top: 5px;
 }

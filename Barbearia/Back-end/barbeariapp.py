@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 from sqlalchemy import func
@@ -8,20 +8,16 @@ import os
 # 🔧 CONFIGURAÇÃO DO FLASK E BANCO
 # ================================
 
-# Caminhos base
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 template_dir = os.path.join(BASE_DIR, 'Front-end', 'templates')
 static_dir = os.path.join(BASE_DIR, 'Front-end', 'static')
 
-# Inicializa o Flask com os caminhos corretos
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
-# Configuração do banco de dados SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'banco.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "chave_super_segura"
 
-# Inicializa o banco
 db = SQLAlchemy(app)
 
 # =============================
@@ -45,6 +41,12 @@ class Agendamento(db.Model):
     servico_id = db.Column(db.Integer, db.ForeignKey('servico.id'), nullable=False)
     data_hora = db.Column(db.DateTime, nullable=False)
 
+# ✅ NOVO: modelo do caixa
+class Caixa(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    valor = db.Column(db.Float, nullable=False)
+    data = db.Column(db.DateTime, default=datetime.now)
+
 # =============================
 # 🌐 ROTAS DE PÁGINAS
 # =============================
@@ -60,8 +62,8 @@ def agenda():
 def meus_agendamentos():
     return render_template('clientes/meus_agendamentos.html')
 
-@app.route('/admin')
-def admin_home():
+@app.route('/admin/login')
+def admin_login():
     return render_template('admin/login.html')
 
 @app.route('/caixa')
@@ -87,7 +89,6 @@ def api_agendamentos():
         data_str = request.args.get('data')
         telefone = request.args.get('telefone')
 
-        # Busca por data
         if data_str:
             try:
                 data = datetime.strptime(data_str, '%Y-%m-%d').date()
@@ -97,8 +98,6 @@ def api_agendamentos():
             agendamentos = Agendamento.query.filter(
                 func.date(Agendamento.data_hora) == data
             ).all()
-
-        # Busca por telefone (para cliente)
         elif telefone:
             agendamentos = (
                 Agendamento.query
@@ -122,7 +121,6 @@ def api_agendamentos():
             ]
         })
 
-    # Criar novo agendamento
     if request.method == 'POST':
         data = request.get_json()
         nome = data.get('nome')
@@ -136,12 +134,10 @@ def api_agendamentos():
 
         data_hora = datetime.strptime(f'{data_str} {hora_str}', '%Y-%m-%d %H:%M')
 
-        # Verifica se horário está ocupado
         existe = Agendamento.query.filter_by(data_hora=data_hora).first()
         if existe:
             return jsonify({'error': 'Horário já ocupado'}), 400
 
-        # Verifica se cliente já existe
         cliente = Cliente.query.filter_by(telefone=telefone).first()
         if not cliente:
             cliente = Cliente(nome=nome, telefone=telefone)
@@ -159,6 +155,42 @@ def api_agendamentos():
         return jsonify({'message': 'Agendamento criado com sucesso!'})
 
 # =============================
+# 💰 API DO CAIXA
+# =============================
+class Caixa(db.Model):
+    __tablename__ = 'caixa'
+    __table_args__ = {'extend_existing': True}  # 👈 adiciona isso
+    id = db.Column(db.Integer, primary_key=True)
+    valor_total = db.Column(db.Float, default=0.0)
+
+
+@app.route('/api/caixa', methods=['GET', 'POST', 'DELETE'])
+def api_caixa():
+    caixa = Caixa.query.first()
+    if not caixa:
+        caixa = Caixa(valor_total=0)
+        db.session.add(caixa)
+        db.session.commit()
+
+    # 🔹 GET → retorna o valor atual
+    if request.method == 'GET':
+        return jsonify({'valor_total': caixa.valor_total})
+
+    # 🔹 POST → adiciona valor
+    if request.method == 'POST':
+        data = request.get_json()
+        valor = float(data.get('valor', 0))
+        caixa.valor_total += valor
+        db.session.commit()
+        return jsonify({'valor_total': caixa.valor_total})
+
+    # 🔹 DELETE → zera o caixa
+    if request.method == 'DELETE':
+        caixa.valor_total = 0
+        db.session.commit()
+        return jsonify({'valor_total': caixa.valor_total})
+
+# =============================
 # ⚙️ INICIALIZAÇÃO DO BANCO
 # =============================
 with app.app_context():
@@ -168,7 +200,9 @@ with app.app_context():
             Servico(nome='Corte de Cabelo', preco=50.00),
             Servico(nome='Barba Terapêutica', preco=30.00),
             Servico(nome='Sobrancelha', preco=15.00),
-            Servico(nome='Limpeza de Pele', preco=40.00)
+            Servico(nome='Limpeza de Pele', preco=40.00),
+            Servico(nome='Corte de cabelo + Barba', preco=70.00),
+            Servico(nome='Barba', preco=20.00)
         ])
         db.session.commit()
 
@@ -177,4 +211,3 @@ with app.app_context():
 # =============================
 if __name__ == '__main__':
     app.run(debug=True)
-# =============================

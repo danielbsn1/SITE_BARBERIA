@@ -9,7 +9,7 @@
 
  </head> 
 <body>
-  <header>Agenda - Barbearia TOP</header>
+  <header>Agenda - Barbearia Style</header>
 
   <main>
     <h2>Agenda</h2>
@@ -34,7 +34,8 @@
           <option value="1">Corte de cabelo - R$ 50,00</option>
           <option value="2">Barba terapêutica - R$ 30,00</option>
           <option value="3">Sobrancelha - R$ 15,00</option>
-          <option value="4">Limpeza de pele - R$ 40,00</option>
+          <option value="5">Corte de cabelo + Barba - R$ 70,oo</option>
+          <option value="6">Barba - R$ 20,00 </option>
         </select>
 
         <label for="hora">Hora</label>
@@ -44,12 +45,7 @@
       </form>
     </section>
 
-    <section>
-      <h3>Agendamentos</h3>
-      <ul id="lista-agendamentos">
-        <li>Escolha uma data para ver agendamentos.</li>
-      </ul>
-    </section>
+   
   </main>
   <!-- JS carregado no final -->
  <script src="{{ url_for('static', filename='js/agenda.js') }}"></script>

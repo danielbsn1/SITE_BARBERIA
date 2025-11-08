@@ -1,25 +1,65 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const btnBuscar = document.getElementById("btnBuscar");
+  const telefoneInput = document.getElementById("telefone");
+  const lista = document.getElementById("listaAgendamentos");
 
-ocument.getElementById('buscar').addEventListener('click', async () => {
-      const tel = document.getElementById('telefone').value.trim();
-      const ul = document.getElementById('lista-cliente');
-      if (!tel) { ul.innerHTML = '<li>Digite o telefone.</li>'; return; }
+  // Buscar agendamentos do cliente
+  if (btnBuscar) {
+    btnBuscar.addEventListener("click", async () => {
+      const telefone = telefoneInput.value.trim();
+      if (!telefone) {
+        alert("Digite seu telefone para buscar os agendamentos!");
+        return;
+      }
 
-      ul.innerHTML = '<li>Carregando...</li>';
       try {
-        const res = await fetch('/api/agendamentos?telefone=' + encodeURIComponent(tel));
-        if (!res.ok) throw new Error('Erro ao buscar');
-        const data = await res.json();
-        ul.innerHTML = '';
+        const resp = await fetch(`/api/agendamentos?telefone=${telefone}`);
+        const data = await resp.json();
+
+        lista.innerHTML = ""; // limpa a lista
+
         if (!data.agendamentos || data.agendamentos.length === 0) {
-          ul.innerHTML = '<li>Nenhum agendamento encontrado.</li>';
+          lista.innerHTML = "<p>Nenhum agendamento encontrado.</p>";
           return;
         }
+
         data.agendamentos.forEach(a => {
-          const li = document.createElement('li');
-          li.textContent = `${a.data_hora} — ${a.servico} — R$ ${Number(a.preco).toFixed(2)} — Pago: ${a.pago ? 'Sim' : 'Não'}`;
-          ul.appendChild(li);
+          const item = document.createElement("div");
+          item.classList.add("agendamento");
+          item.innerHTML = `
+            <p><strong>Serviço:</strong> ${a.servico}</p>
+            <p><strong>Data:</strong> ${a.data_hora}</p>
+            <p><strong>Preço:</strong> R$ ${a.preco.toFixed(2)}</p>
+            <button class="btnCancelar" data-id="${a.id}">❌ Cancelar</button>
+          `;
+          lista.appendChild(item);
         });
-      } catch (err) {
-        ul.innerHTML = `<li>Erro: ${err.message}</li>`;
+
+        // Botões de cancelamento
+        document.querySelectorAll(".btnCancelar").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            if (!confirm("Deseja cancelar este agendamento?")) return;
+
+            try {
+              const resp = await fetch(`/api/agendamentos/${id}`, {
+                method: "DELETE"
+              });
+
+              const result = await resp.json();
+              alert(result.message || "Agendamento cancelado!");
+              btn.closest(".agendamento").remove();
+            } catch (error) {
+              alert("Erro ao cancelar o agendamento.");
+              console.error(error);
+            }
+          });
+        });
+
+      } catch (error) {
+        console.error("Erro ao buscar agendamentos:", error);
+        alert("Erro ao buscar agendamentos. Tente novamente.");
       }
     });
+  }
+});

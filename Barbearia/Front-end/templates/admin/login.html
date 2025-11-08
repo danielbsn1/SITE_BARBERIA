@@ -1,23 +1,31 @@
-login.html <!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Barbearia Style</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-
+  <title>Login - Barbearia</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
-  <main>
-    <h2>Login do Administrador</h2>
-    <form method="POST" action="/login">
-      <label>Usuário</label>
-      <input name="usuario" required>
-      <label>Senha</label>
-      <input type="password" name="senha" required>
+  <div class="login-container">
+    <h1>Login do Administrador</h1>
+
+    <form id="formLogin">
+      <div class="form-group">
+        <label for="usuario">Usuário</label>
+        <input type="text" id="usuario" name="usuario" required>
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" required>
+      </div>
+
       <button type="submit">Entrar</button>
     </form>
-  </main>
- <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
+    <p id="mensagem" class="mensagem"></p>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 </body>
-</html> 
+</html>

@@ -1,35 +1,51 @@
-title{
+.title {
     color: #333;
+    text-align: center;
+    width: 200px;
+    margin: 0 auto; /* Centraliza horizontalmente */
 }
+
 header {
     text-align: center;
     font-size: 24px;
     margin-top: 10px;
     color: #333;
 }
-div class{
-    max-width: 100px;
-    margin: 0px auto;
-    padding: 0px;
+
+.container { /* Renomeei de "div class{" para ".container" – use <div class="container"> no HTML */
+    max-width: 400px; /* Aumentei para caber melhor os elementos */
+    margin: 20px auto; /* Centraliza horizontalmente com margem superior/inferior */
+    padding: 60px;
     background-color: #f9f9f9;
-    border-radius: px;
-    box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
+    border-radius: 5px; /* Corrigido: adicionado valor */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Corrigido: adicionado valor para sombra */
+    text-align: center; /* Centraliza o texto dentro */
 }
+
 label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
     color: #333;
+    text-align: center; /* Já estava, mas reforça */
 }
+
 input {
-    width: 10%;
-    padding: 4px;
+    width: 100%; /* Mudado para 100% para ocupar toda a largura do container, mas centralizado */
+    max-width: 300px; /* Limita a largura máxima para não ficar gigante */
+    padding: 8px; /* Aumentei o padding para melhor usabilidade */
     margin-bottom: 13px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    text-align: center; /* Centraliza o texto digitado */
+    display: block; /* Garante que seja bloco */
+    margin-left: auto; /* Centraliza horizontalmente */
+    margin-right: auto;
 }
+
 button {
-    width: 10%;
+    width: 100%; /* Mudado para 100% para consistência */
+    max-width: 300px; /* Limita largura */
     padding: 10px;
     background-color: #200bdf;
     color: white;
@@ -37,17 +53,23 @@ button {
     border-radius: 4px;
     font-size: 13px;
     cursor: pointer;
+    text-align: center;
+    display: block; /* Garante que seja bloco */
+    margin: 0 auto; /* Centraliza horizontalmente */
 }
+
 button:hover {
     background-color: #1508a3;
+    /* Removi a mudança de width no hover, pois era inconsistente – agora fica estável */
 }
+
 body {
-   background-color: #a8adabc7;
-   }
-body {
-  background-image:url;
+    background-color: #a8adabc7;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* opcional: faz o fundo ficar fixo ao rolar */
+    background-attachment: fixed; /* Opcional: fundo fixo ao rolar */
+}
+h1{
+    text-align: center;
 }
