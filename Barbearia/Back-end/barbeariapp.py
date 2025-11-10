@@ -1,55 +1,47 @@
+import os
+from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, date
-from sqlalchemy import func
-import os
+import logging
 
-# ================================
-# 🔧 CONFIGURAÇÃO DO FLASK E BANCO
-# ================================
+# Configuração de logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
+# Configuração do app
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 template_dir = os.path.join(BASE_DIR, 'Front-end', 'templates')
 static_dir = os.path.join(BASE_DIR, 'Front-end', 'static')
 
-app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+app = Flask(__name__, 
+    template_folder=template_dir,
+    static_folder=static_dir)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'banco.db')
+# Configuração do banco
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///barbearia.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = "chave_super_segura"
-
 db = SQLAlchemy(app)
 
-# =============================
-# 📦 MODELOS
-# =============================
-class Cliente(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100))
-    telefone = db.Column(db.String(50))
-    agendamentos = db.relationship('Agendamento', backref='cliente', lazy=True)
-
+# Modelos (Servico precisa vir antes de Agendamento)
 class Servico(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100))
-    preco = db.Column(db.Float)
-    agendamentos = db.relationship('Agendamento', backref='servico', lazy=True)
+    nome = db.Column(db.String(100), nullable=False)
+    preco = db.Column(db.Float, nullable=False)
 
 class Agendamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
-    servico_id = db.Column(db.Integer, db.ForeignKey('servico.id'), nullable=False)
+    nome = db.Column(db.String(100), nullable=False)
+    telefone = db.Column(db.String(20), nullable=False)
     data_hora = db.Column(db.DateTime, nullable=False)
+    servico_id = db.Column(db.Integer, db.ForeignKey('servico.id'), nullable=False)
+    servico = db.relationship('Servico', backref=db.backref('agendamentos', lazy=True))
 
-# ✅ NOVO: modelo do caixa
+# Adicione o modelo Caixa antes do create_all()
 class Caixa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    valor = db.Column(db.Float, nullable=False)
-    data = db.Column(db.DateTime, default=datetime.now)
+    saldo = db.Column(db.Float, default=0.0)
+    ultima_atualizacao = db.Column(db.DateTime, default=datetime.now)
 
-# =============================
-# 🌐 ROTAS DE PÁGINAS
-# =============================
 @app.route('/')
 def home():
     return render_template('clientes/home.html')
@@ -83,131 +75,249 @@ def api_servicos():
         ]
     })
 
+@app.route('/api/servicos-debug')
+def api_servicos_debug():
+    exemplo = [
+        {'id': 1, 'nome': 'Corte de Cabelo', 'preco': 40.0},
+        {'id': 2, 'nome': 'Barba', 'preco': 25.0},
+        {'id': 3, 'nome': 'Sobrancelha', 'preco': 20.0}
+    ]
+    return jsonify({'servicos': exemplo})
+
 @app.route('/api/agendamentos', methods=['GET', 'POST'])
 def api_agendamentos():
-    if request.method == 'GET':
-        data_str = request.args.get('data')
-        telefone = request.args.get('telefone')
-
-        if data_str:
-            try:
-                data = datetime.strptime(data_str, '%Y-%m-%d').date()
-            except:
-                return jsonify({'error': 'Data inválida'}), 400
-
-            agendamentos = Agendamento.query.filter(
-                func.date(Agendamento.data_hora) == data
-            ).all()
-        elif telefone:
-            agendamentos = (
-                Agendamento.query
-                .join(Cliente)
-                .filter(Cliente.telefone == telefone)
-                .all()
-            )
-        else:
-            return jsonify({'agendamentos': []})
-
-        return jsonify({
-            'agendamentos': [
-                {
-                    'id': a.id,
-                    'cliente': a.cliente.nome,
-                    'telefone': a.cliente.telefone,
-                    'servico': a.servico.nome,
-                    'preco': a.servico.preco,
-                    'data_hora': a.data_hora.strftime('%Y-%m-%d %H:%M')
-                } for a in agendamentos
-            ]
-        })
-
     if request.method == 'POST':
-        data = request.get_json()
-        nome = data.get('nome')
-        telefone = data.get('telefone')
-        servico_id = data.get('servico_id')
-        data_str = data.get('data')
-        hora_str = data.get('hora')
+        try:
+            dados = request.get_json()
+            if not dados:
+                return jsonify({'error': 'Dados não fornecidos'}), 400
 
-        if not (nome and servico_id and data_str and hora_str):
-            return jsonify({'error': 'Campos obrigatórios faltando'}), 400
+            # Converte data e hora para datetime
+            data = dados.get('data')
+            hora = dados.get('hora')
+            if not data or not hora:
+                return jsonify({'error': 'Data e hora são obrigatórios'}), 400
 
-        data_hora = datetime.strptime(f'{data_str} {hora_str}', '%Y-%m-%d %H:%M')
+            data_hora = datetime.strptime(f"{data} {hora}", '%Y-%m-%d %H:%M')
+            
+            # Verifica se já existe agendamento neste horário
+            agendamento_existente = Agendamento.query.filter(
+                Agendamento.data_hora == data_hora
+            ).first()
+            
+            if agendamento_existente:
+                return jsonify({
+                    'success': False,
+                    'error': 'Já existe um agendamento neste horário'
+                }), 409
 
-        existe = Agendamento.query.filter_by(data_hora=data_hora).first()
-        if existe:
-            return jsonify({'error': 'Horário já ocupado'}), 400
-
-        cliente = Cliente.query.filter_by(telefone=telefone).first()
-        if not cliente:
-            cliente = Cliente(nome=nome, telefone=telefone)
-            db.session.add(cliente)
+            # Cria novo agendamento
+            novo = Agendamento(
+                nome=dados.get('nome'),
+                telefone=dados.get('telefone'),
+                servico_id=dados.get('servico_id'),
+                data_hora=data_hora
+            )
+            
+            db.session.add(novo)
             db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Agendamento criado com sucesso',
+                'id': novo.id
+            })
 
-        agendamento = Agendamento(
-            cliente_id=cliente.id,
-            servico_id=servico_id,
-            data_hora=data_hora
-        )
-        db.session.add(agendamento)
+        except Exception as e:
+            db.session.rollback()
+            app.logger.exception("Erro ao criar agendamento")
+            return jsonify({'error': str(e)}), 500
+
+    # GET: lista agendamentos
+    if request.method == 'GET':
+        try:
+            agendamentos = Agendamento.query\
+                .filter(Agendamento.data_hora >= datetime.now())\
+                .order_by(Agendamento.data_hora)\
+                .all()
+            
+            resultado = []
+            for ag in agendamentos:
+                resultado.append({
+                    'id': ag.id,
+                    'nome': ag.nome,
+                    'telefone': ag.telefone,
+                    'data_hora': ag.data_hora.strftime('%Y-%m-%d %H:%M:%S'),
+                    'servico': ag.servico.nome,
+                    'preco': float(ag.servico.preco)
+                })
+            
+            return jsonify({'agendamentos': resultado})
+        except Exception as e:
+            app.logger.exception("Erro ao listar agendamentos")
+            return jsonify({'error': str(e)}), 500
+
+@app.route('/api/agendamentos/cliente/<telefone>')
+def api_agendamentos_cliente(telefone):
+    try:
+        app.logger.debug(f"Buscando agendamentos para telefone: {telefone}")
+        
+        # Remove caracteres não numéricos do telefone
+        telefone_limpo = ''.join(filter(str.isdigit, telefone))
+        app.logger.debug(f"Telefone limpo: {telefone_limpo}")
+        
+        # Busca agendamentos
+        agendamentos = Agendamento.query\
+            .filter(Agendamento.telefone == telefone_limpo)\
+            .filter(Agendamento.data_hora >= datetime.now())\
+            .order_by(Agendamento.data_hora)\
+            .all()
+        
+        app.logger.debug(f"Encontrados {len(agendamentos)} agendamentos")
+        
+        resultado = []
+        for ag in agendamentos:
+            resultado.append({
+                'id': ag.id,
+                'data_hora': ag.data_hora.strftime('%Y-%m-%d %H:%M:%S'),
+                'servico': ag.servico.nome,
+                'preco': float(ag.servico.preco),
+                'telefone': ag.telefone
+            })
+        
+        return jsonify({'agendamentos': resultado})
+    
+    except Exception as e:
+        app.logger.exception("Erro ao buscar agendamentos")
+        return jsonify({
+            'error': 'Erro ao buscar agendamentos',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/agendamentos/<int:id>', methods=['DELETE'])
+def api_cancelar_agendamento(id):
+    try:
+        agendamento = Agendamento.query.get(id)
+        if not agendamento:
+            return jsonify({'error': 'Agendamento não encontrado'}), 404
+        
+        db.session.delete(agendamento)
         db.session.commit()
-
-        return jsonify({'message': 'Agendamento criado com sucesso!'})
+        
+        return jsonify({'message': 'Agendamento cancelado com sucesso'})
+    
+    except Exception as e:
+        app.logger.error(f"Erro ao cancelar agendamento: {str(e)}")
+        db.session.rollback()
+        return jsonify({'error': 'Erro ao cancelar agendamento'}), 500
 
 # =============================
 # 💰 API DO CAIXA
 # =============================
-class Caixa(db.Model):
-    __tablename__ = 'caixa'
-    __table_args__ = {'extend_existing': True}  # 👈 adiciona isso
-    id = db.Column(db.Integer, primary_key=True)
-    valor_total = db.Column(db.Float, default=0.0)
+@app.route('/api/caixa/saldo')
+def api_caixa_saldo():
+    try:
+        logger.debug("Buscando saldo do caixa")
+        caixa = Caixa.query.first()
+        if not caixa:
+            logger.debug("Criando novo caixa")
+            caixa = Caixa(saldo=0.0)
+            db.session.add(caixa)
+            db.session.commit()
+        return jsonify({'saldo': float(caixa.saldo)})
+    except Exception as e:
+        logger.error(f"Erro ao buscar saldo: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
+@app.route('/api/caixa/adicionar', methods=['POST'])
+def api_caixa_adicionar():
+    try:
+        dados = request.get_json()
+        if not dados or 'valor' not in dados:
+            return jsonify({'error': 'Valor não informado'}), 400
+            
+        valor = float(dados['valor'])
+        if valor <= 0:
+            return jsonify({'error': 'Valor deve ser maior que zero'}), 400
 
-@app.route('/api/caixa', methods=['GET', 'POST', 'DELETE'])
-def api_caixa():
-    caixa = Caixa.query.first()
-    if not caixa:
-        caixa = Caixa(valor_total=0)
-        db.session.add(caixa)
+        logger.debug(f"Adicionando valor ao caixa: R$ {valor}")
+        caixa = Caixa.query.first()
+        if not caixa:
+            caixa = Caixa(saldo=valor)
+            db.session.add(caixa)
+        else:
+            caixa.saldo += valor
+        
+        caixa.ultima_atualizacao = datetime.now()
         db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'saldo': float(caixa.saldo)
+        })
+    except Exception as e:
+        logger.error(f"Erro ao adicionar valor: {str(e)}")
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
-    # 🔹 GET → retorna o valor atual
-    if request.method == 'GET':
-        return jsonify({'valor_total': caixa.valor_total})
-
-    # 🔹 POST → adiciona valor
-    if request.method == 'POST':
-        data = request.get_json()
-        valor = float(data.get('valor', 0))
-        caixa.valor_total += valor
+@app.route('/api/caixa/fechar', methods=['POST'])
+def api_caixa_fechar():
+    try:
+        logger.debug("Fechando caixa")
+        caixa = Caixa.query.first()
+        if not caixa:
+            return jsonify({'error': 'Caixa não encontrado'}), 404
+        
+        total = float(caixa.saldo)
+        caixa.saldo = 0.0
+        caixa.ultima_atualizacao = datetime.now()
         db.session.commit()
-        return jsonify({'valor_total': caixa.valor_total})
-
-    # 🔹 DELETE → zera o caixa
-    if request.method == 'DELETE':
-        caixa.valor_total = 0
-        db.session.commit()
-        return jsonify({'valor_total': caixa.valor_total})
+        
+        return jsonify({
+            'success': True,
+            'total': total
+        })
+    except Exception as e:
+        logger.error(f"Erro ao fechar caixa: {str(e)}")
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 # =============================
-# ⚙️ INICIALIZAÇÃO DO BANCO
+# ⚙️ INICIALIZAÇÃO DO BANCO (SEED SEGURO)
 # =============================
 with app.app_context():
+    # Recria todas as tabelas
+    db.drop_all()
     db.create_all()
-    if Servico.query.count() == 0:
-        db.session.add_all([
-            Servico(nome='Corte de Cabelo', preco=50.00),
-            Servico(nome='Barba Terapêutica', preco=30.00),
-            Servico(nome='Sobrancelha', preco=15.00),
-            Servico(nome='Limpeza de Pele', preco=40.00),
-            Servico(nome='Corte de cabelo + Barba', preco=70.00),
-            Servico(nome='Barba', preco=20.00)
-        ])
+    
+    # Cria caixa inicial
+    caixa = Caixa(saldo=0.0)
+    db.session.add(caixa)
+    
+    # Seed inicial de serviços
+    servicos_iniciais = [
+        Servico(nome='Corte de Cabelo', preco=50.00),
+        Servico(nome='Barba Terapêutica', preco=30.00),
+        Servico(nome='Sobrancelha', preco=15.00),
+        Servico(nome='Limpeza de Pele', preco=40.00),
+        Servico(nome='Corte de cabelo + Barba', preco=70.00),
+        Servico(nome='Barba', preco=20.00)
+    ]
+    for s in servicos_iniciais:
+        db.session.add(s)
+    
+    # Commit todas as mudanças
+    try:
         db.session.commit()
+        logger.info("Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erro ao inicializar banco: {str(e)}")
+        raise
 
 # =============================
 # 🚀 INÍCIO DO SERVIDOR
 # =============================
 if __name__ == '__main__':
-    app.run(debug=True)
+    # roda apenas em localhost para desenvolvimento
+    app.run(host='127.0.0.1', port=5000, debug=True)

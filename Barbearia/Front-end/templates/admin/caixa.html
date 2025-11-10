@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Caixa</title>
-
-  <!-- ✅ Estilo básico -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
+    <meta charset="UTF-8">
+    <title>Caixa - Barbearia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/caixa.css') }}">
 </head>
 <body>
-  <div class="container">
-    <h1>Painel do Caixa</h1>
+    <div class="container">
+        <h1>💰 Caixa</h1>
 
-    <h2 id="total">Total no Caixa: R$ 0,00</h2>
+        <div class="caixa-controls">
+            <div class="saldo">
+                <h2>Saldo Atual:</h2>
+                <p id="saldoAtual">R$ 0,00</p>
+            </div>
 
-    <div class="input-container">
-      <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
+            <div class="entrada">
+                <h3>Adicionar Valor</h3>
+                <input type="number" id="valor" step="0.01" min="0" placeholder="0,00">
+                <button onclick="adicionarValor()">Adicionar</button>
+            </div>
+
+            <div class="acoes">
+                <button onclick="fecharCaixa()" class="btn-fechar">Fechar Caixa</button>
+            </div>
+        </div>
+
+        <div id="msg" class="mensagem" style="display:none"></div>
     </div>
 
-    <div class="btn-container">
-      <button id="btnAdicionar">Adicionar</button>
-      <button id="btnFechar">Fechar Caixa</button>
-    </div>
-
-    <div id="mensagem"></div>
-  </div>
-
-  <!-- ✅ Script de funcionalidade -->
-  <script src="{{ url_for('static', filename='js/caixa.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/caixa.js') }}"></script>
 </body>
 </html>
