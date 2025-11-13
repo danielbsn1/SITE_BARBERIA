@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (elemento) {
                     elemento.remove();
                     
-                    
+                    // Se não houver mais agendamentos, mostra mensagem
                     if (listaDiv.children.length === 0) {
                         listaDiv.innerHTML = '<p class="msg">Nenhum agendamento encontrado.</p>';
                     }
@@ -71,16 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    
+    // Evento de clique no botão buscar
     btnBuscar.addEventListener('click', buscarAgendamentos);
 
-   
+    // Evento de pressionar Enter no input
     telefoneInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             buscarAgendamentos();
         }
     });
 
-    
+    // Expõe função para o onclick do botão
     window.cancelarAgendamento = cancelarAgendamento;
 });
