@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(`/api/agendamentos/cliente/${telefone}`);
             const data = await response.json();
 
-            listaDiv.innerHTML = '';  // limpa lista atual
+            listaDiv.innerHTML = '';  
 
             if (!data.agendamentos || data.agendamentos.length === 0) {
                 listaDiv.innerHTML = '<p class="msg">Nenhum agendamento encontrado.</p>';
@@ -52,12 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
-                // Remove o elemento da tela
+                
                 const elemento = document.querySelector(`[data-agendamento-id="${id}"]`);
                 if (elemento) {
                     elemento.remove();
                     
-                    // Se não houver mais agendamentos, mostra mensagem
+                    
                     if (listaDiv.children.length === 0) {
                         listaDiv.innerHTML = '<p class="msg">Nenhum agendamento encontrado.</p>';
                     }
@@ -71,16 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Evento de clique no botão buscar
+    
     btnBuscar.addEventListener('click', buscarAgendamentos);
 
-    // Evento de pressionar Enter no input
+   
     telefoneInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             buscarAgendamentos();
         }
     });
 
-    // Expõe função para o onclick do botão
+    
     window.cancelarAgendamento = cancelarAgendamento;
 });

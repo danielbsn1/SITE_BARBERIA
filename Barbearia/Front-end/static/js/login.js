@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formLogin');
   const msg = document.getElementById('mensagem');
 
-  if (!form) return; // 🔒 segurança extra para evitar erro
+  if (!form) return; 
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Envio para o servidor (simulado por enquanto)
+    
     if (usuario === 'admin' && senha === '1234') {
       msg.textContent = 'Login bem-sucedido! Redirecionando...';
       msg.style.color = 'green';
       setTimeout(() => {
-        window.location.href = '/caixa'; // redireciona para página de administração
+        window.location.href = '/caixa'; 
       }, 1000);
     } else {
       msg.textContent = 'Usuário ou senha incorretos.';

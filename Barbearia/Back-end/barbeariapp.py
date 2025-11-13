@@ -4,11 +4,10 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import logging
 
-# Configuração de logging
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Configuração do app
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 template_dir = os.path.join(BASE_DIR, 'Front-end', 'templates')
 static_dir = os.path.join(BASE_DIR, 'Front-end', 'static')
@@ -17,12 +16,10 @@ app = Flask(__name__,
     template_folder=template_dir,
     static_folder=static_dir)
 
-# Configuração do banco
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///barbearia.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Modelos (Servico precisa vir antes de Agendamento)
 class Servico(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -36,7 +33,6 @@ class Agendamento(db.Model):
     servico_id = db.Column(db.Integer, db.ForeignKey('servico.id'), nullable=False)
     servico = db.relationship('Servico', backref=db.backref('agendamentos', lazy=True))
 
-# Adicione o modelo Caixa antes do create_all()
 class Caixa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saldo = db.Column(db.Float, default=0.0)
@@ -62,9 +58,7 @@ def admin_login():
 def caixa():
     return render_template('admin/caixa.html')
 
-# =============================
-# 🔗 API DE SERVIÇOS E AGENDAMENTOS
-# =============================
+
 @app.route('/api/servicos')
 def api_servicos():
     servicos = Servico.query.all()
@@ -92,7 +86,7 @@ def api_agendamentos():
             if not dados:
                 return jsonify({'error': 'Dados não fornecidos'}), 400
 
-            # Converte data e hora para datetime
+          
             data = dados.get('data')
             hora = dados.get('hora')
             if not data or not hora:
@@ -100,7 +94,6 @@ def api_agendamentos():
 
             data_hora = datetime.strptime(f"{data} {hora}", '%Y-%m-%d %H:%M')
             
-            # Verifica se já existe agendamento neste horário
             agendamento_existente = Agendamento.query.filter(
                 Agendamento.data_hora == data_hora
             ).first()
@@ -111,7 +104,6 @@ def api_agendamentos():
                     'error': 'Já existe um agendamento neste horário'
                 }), 409
 
-            # Cria novo agendamento
             novo = Agendamento(
                 nome=dados.get('nome'),
                 telefone=dados.get('telefone'),
@@ -133,7 +125,6 @@ def api_agendamentos():
             app.logger.exception("Erro ao criar agendamento")
             return jsonify({'error': str(e)}), 500
 
-    # GET: lista agendamentos
     if request.method == 'GET':
         try:
             agendamentos = Agendamento.query\
@@ -162,11 +153,9 @@ def api_agendamentos_cliente(telefone):
     try:
         app.logger.debug(f"Buscando agendamentos para telefone: {telefone}")
         
-        # Remove caracteres não numéricos do telefone
         telefone_limpo = ''.join(filter(str.isdigit, telefone))
         app.logger.debug(f"Telefone limpo: {telefone_limpo}")
         
-        # Busca agendamentos
         agendamentos = Agendamento.query\
             .filter(Agendamento.telefone == telefone_limpo)\
             .filter(Agendamento.data_hora >= datetime.now())\
@@ -211,9 +200,7 @@ def api_cancelar_agendamento(id):
         db.session.rollback()
         return jsonify({'error': 'Erro ao cancelar agendamento'}), 500
 
-# =============================
-# 💰 API DO CAIXA
-# =============================
+
 @app.route('/api/caixa/saldo')
 def api_caixa_saldo():
     try:
@@ -282,19 +269,15 @@ def api_caixa_fechar():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# =============================
-# ⚙️ INICIALIZAÇÃO DO BANCO (SEED SEGURO)
-# =============================
+
 with app.app_context():
-    # Recria todas as tabelas
+
     db.drop_all()
     db.create_all()
-    
-    # Cria caixa inicial
+
     caixa = Caixa(saldo=0.0)
     db.session.add(caixa)
-    
-    # Seed inicial de serviços
+
     servicos_iniciais = [
         Servico(nome='Corte de Cabelo', preco=50.00),
         Servico(nome='Barba Terapêutica', preco=30.00),
@@ -305,19 +288,15 @@ with app.app_context():
     ]
     for s in servicos_iniciais:
         db.session.add(s)
-    
-    # Commit todas as mudanças
+ 
     try:
         db.session.commit()
         logger.info("Banco de dados inicializado com sucesso!")
     except Exception as e:
         db.session.rollback()
         logger.error(f"Erro ao inicializar banco: {str(e)}")
-        raise
-
-# =============================
-# 🚀 INÍCIO DO SERVIDOR
-# =============================
+        
+     
 if __name__ == '__main__':
     # roda apenas em localhost para desenvolvimento
     app.run(host='127.0.0.1', port=5000, debug=True)

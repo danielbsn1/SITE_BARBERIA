@@ -1,4 +1,4 @@
-// home.js
+
 function gerarHome() {
   const main = document.querySelector('main');
   if (!main) {
@@ -6,7 +6,6 @@ function gerarHome() {
     return;
   }
 
-  // Evita duplicação de conteúdo
   if (main.querySelector('.home')) return;
 
   main.innerHTML = `

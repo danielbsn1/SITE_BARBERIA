@@ -1,8 +1,4 @@
-// ==============================
-// agenda.js
-// ==============================
 
-// Carrega as horas disponíveis
 function gerarHoras() {
   const selectHora = document.getElementById('hora');
   selectHora.innerHTML = '';
@@ -15,7 +11,7 @@ function gerarHoras() {
   }
 }
 
-// Carrega serviços do backend
+
 async function loadServicos() {
   try {
     console.log('loadServicos: iniciando fetch');
@@ -50,7 +46,7 @@ async function loadServicos() {
   }
 }
 
-// Carrega agendamentos de uma data
+
 async function loadAgendamentos(data) {
   try {
     const res = await fetch('/api/agendamentos?data=' + data);
@@ -75,7 +71,7 @@ async function loadAgendamentos(data) {
   }
 }
 
-// Quando o formulário for enviado
+
 document.getElementById('agendamentoForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -108,16 +104,16 @@ document.getElementById('agendamentoForm').addEventListener('submit', async (e) 
   }
 });
 
-// Atualiza lista quando a data muda
+
 document.getElementById('data').addEventListener('change', (e) => {
   loadAgendamentos(e.target.value);
 });
 
-// Inicializa a página
+
 document.addEventListener('DOMContentLoaded', function() {
     const hoje = new Date().toISOString().slice(0,10);
     
-    // Função auxiliar para mostrar mensagens
+    
     function mostrarMensagem(texto, tipo = 'erro') {
         const msg = document.getElementById('msg');
         if (!msg) return;
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Gera opções de horário
+    
     function gerarHoras() {
         const selectHora = document.getElementById('hora');
         if (!selectHora) return;
@@ -146,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Carrega serviços do backend
     async function loadServicos() {
         try {
             const res = await fetch('/api/servicos');
@@ -174,21 +169,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handler do formulário
+    
     const form = document.getElementById('agendamentoForm');
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             mostrarMensagem('', ''); // limpa mensagens anteriores
 
-            // Coleta dados do formulário
+            
             const nome = document.getElementById('nome').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
             const servico_id = document.getElementById('servico').value;
             const data = document.getElementById('data').value;
             const hora = document.getElementById('hora').value;
 
-            // Validação básica
+           
             if (!nome || !telefone || !servico_id || !data || !hora) {
                 mostrarMensagem('Por favor, preencha todos os campos.');
                 return;
@@ -218,8 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Inicialização
+    
     const dataInput = document.getElementById('data');
     if (dataInput) {
         dataInput.value = hoje;

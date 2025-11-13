@@ -39,7 +39,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* opcional: faz o fundo ficar fixo ao rolar */
+  background-attachment: fixed; 
 }
 body {
    background-color: #a8adabc7;

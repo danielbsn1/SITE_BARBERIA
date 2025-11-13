@@ -1,6 +1,4 @@
-/* ================================
-   ESTILO GERAL
-================================ */
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f1f1f1;
@@ -8,9 +6,7 @@ body {
   padding: 0;
 }
 
-/* ================================
-   CABEÇALHO
-================================ */
+
 header {
   background-color: #222;
   color: #fff;
@@ -21,9 +17,7 @@ header {
   letter-spacing: 1px;
 }
 
-/* ================================
-   CONTEÚDO PRINCIPAL
-================================ */
+
 main {
   max-width: 420px;
   margin: 40px auto;
@@ -33,9 +27,6 @@ main {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* ================================
-   FORMULÁRIO
-================================ */
 form {
   display: flex;
   flex-direction: column;
@@ -62,9 +53,7 @@ input:focus, select:focus {
   box-shadow: 0 0 3px rgba(0,123,255,0.5);
 }
 
-/* ================================
-   SELECT MÚLTIPLO
-================================ */
+
 select[multiple] {
   height: 120px;
   background-color: #fafafa;
@@ -82,9 +71,7 @@ select[multiple] option:hover {
   color: #fff;
 }
 
-/* ================================
-   BOTÃO
-================================ */
+
 button {
   margin-top: 25px;
   background-color: #007bff;
@@ -98,9 +85,7 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* ================================
-   TEXTO DE AJUDA
-================================ */
+
 small {
   color: #555;
   font-size: 0.9em;

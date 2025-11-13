@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const valorInput = document.getElementById("valor");
     const btnAdd = document.getElementById("btnAdicionar");
     const btnFechar = document.getElementById("btnFechar");
-    const mensagem = document.getElementById("msg"); // Alterado para 'msg' para manter consistência
+    const mensagem = document.getElementById("msg"); 
 
     function mostrarMensagem(texto, tipo = 'erro') {
         if (!mensagem) return;
@@ -83,14 +83,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Anexa eventos aos botões
+    
     if (btnAdd) btnAdd.addEventListener('click', adicionarValor);
     if (btnFechar) btnFechar.addEventListener('click', fecharCaixa);
 
-    // Expõe funções globalmente para uso em onclick
+    
     window.adicionarValor = adicionarValor;
     window.fecharCaixa = fecharCaixa;
 
-    // Carrega saldo inicial
     carregarSaldo();
 });
