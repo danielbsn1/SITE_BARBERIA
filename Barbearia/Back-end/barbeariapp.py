@@ -297,6 +297,6 @@ with app.app_context():
         logger.error(f"Erro ao inicializar banco: {str(e)}")
         
      
-if __name__ == '__main__':
-    # roda apenas em localhost para desenvolvimento
-    app.run(host='127.0.0.1', port=5000, debug=True)
+if __name__ == "__main__":
+    app.run()
+
