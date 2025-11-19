@@ -1,8 +1,14 @@
 {
   "builds": [
-    { "src": "barbeariapp.py", "use": "@vercel/python" }
+    {
+      "src": "Back-end/barbeariapp.py",
+      "use": "@vercel/python"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "barbeariapp.py" }
+    {
+      "src": "/(.*)",
+      "dest": "Back-end/barbeariapp.py"
+    }
   ]
 }
