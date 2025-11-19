@@ -1,1 +1,2 @@
-web: gunicorn Back-end.barbeariapp:app
+web: gunicorn "Back-end.barbeariapp:app"
+
