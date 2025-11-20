@@ -51,36 +51,7 @@ Exemplo de templates:
 - templates/clientes/agenda.html
 - templates/admin/caixa.html
 
----
 
-## Como rodar (desenvolvimento)
-
-1. Ative o virtualenv
-2. Na pasta Back-end:
-```powershell
-cd "c:\Users\Usuário\Documents\SITE_BARBERIA\Barbearia\Back-end"
-python barbeariapp.py
-```
-3. Acesse no navegador:
-```
-http://127.0.0.1:5000
-```
-
----
-
-## Comandos úteis
-
-- Remover banco atual:
-```powershell
-Remove-Item "c:\Users\Usuário\Documents\SITE_BARBERIA\Barbearia\Back-end\barbearia.db" -ErrorAction SilentlyContinue
-```
-- Testar endpoint via curl (PowerShell):
-```powershell
-curl http://127.0.0.1:5000/api/servicos
-curl -X POST http://127.0.0.1:5000/api/caixa/adicionar -H "Content-Type: application/json" -d '{"valor":50}'
-```
-
----
 
 ## Rotas principais (resumo)
 
@@ -100,42 +71,16 @@ API:
 - POST /api/caixa/adicionar
 - POST /api/caixa/fechar
 
----
 
-## Admin (teste)
-
-- Usuário: `admin`  
-- Senha: `admin123`  
-(Se utilizar seed automático, ajuste conforme necessidade.)
-
----
 
 ## Banco de dados / seed
 
 O app cria as tabelas automaticamente na primeira execução (db.create_all()) e inclui seed de serviços e caixa (se configurado). Se alterar modelos, remova o arquivo `barbearia.db` para recriar.
 
----
 
-## Boas práticas e próximos passos
 
-- Extrair CSS comum para `static/css/theme.css` e unificar variáveis CSS
-- Adicionar testes unitários (pytest) para rotas API
-- Implementar paginação e autenticação robusta (Flask-Login / Flask-JWT)
-- Fazer backup/rotina de persistência para produção (usar PostgreSQL)
 
----
 
-## Licença e contribuição
-
-Projeto simples para uso local/educacional. Para PRs ou ajustes, adicione instruções no arquivo `CONTRIBUTING.md`.
-
----
-
-Se desejar, eu:
-- gero o arquivo `theme.css` e atualizo os CSS para um padrão visual único, ou
-- crio um `requirements.txt` e script de setup (PowerShell) automático.
-
-Qual opção prefere?
 
 
 
